@@ -1,0 +1,15 @@
+{
+  "name": "devstao-biblioteca-api",
+  "version": "0.0.1",
+  "description": "Backend API para a biblioteca online do DevStão",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
