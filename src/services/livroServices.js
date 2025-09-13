@@ -1,9 +1,9 @@
 const Livro = require('../models/livro');
 const Response = require('../utils/response')
 
-const getAllLivros = (filtros = {}) => {
+const getAllLivros = async (filtros = {}) => {
     try {
-        const livros = Livro.findAll();
+        const livros = await Livro.findAll(filtros);
         return Response.success(livros, 200)
     }
     catch (err) {
@@ -11,44 +11,54 @@ const getAllLivros = (filtros = {}) => {
     }
 }
 
-
-const getLivroById = (filtros) => {
+const getLivroById = async (id) => {
     try {
-        const livros = Livro.findById();
-        return Response.success(livros, 200)
+        const livro = await Livro.findById(id);
+        if (!livro) {
+            return Response.error('Livro não encontrado', 404);
+        }
+        return Response.success(livro, 200)
     }
     catch (err) {
         return Response.error(err.message);
     }
 }
 
-
-const createLivro = (filtros) => {
+const createLivro = async (dadosLivro) => {
     try {
-        const livros = Livro.findById();
-        return Response.success(livros, 200)
+        const livro = await Livro.create(dadosLivro);
+        return Response.success(livro, 201)
     }
     catch (err) {
         return Response.error(err.message);
     }
 }
 
-
-const updateLivro = (filtros) => {
+const updateLivro = async (dadosLivro, id) => {
     try {
-        const livros = Livro.findById();
-        return Response.success(livros, 200)
+        const livroExiste = await Livro.findById(id);
+
+        if (!livroExiste) {
+            return Response.error('Livro não encontrado', 404);
+        }
+
+        const livroAtualizado = await Livro.update(dadosLivro, id);
+        return Response.success(livroAtualizado, 200)
     }
     catch (err) {
         return Response.error(err.message);
     }
 }
 
-
-const deleteLivro = (filtros) => {
+const deleteLivro = async (id) => {
     try {
-        const livros = Livro.findById();
-        return Response.success(livros, 200)
+        const livroExiste = await Livro.findById(id);
+        if (!livroExiste) {
+            return Response.error('Livro não encontrado', 404);
+        }
+
+        await Livro.deleteRegister(id);
+        return Response.success({ message: 'Livro excluído com sucesso' }, 200)
     }
     catch (err) {
         return Response.error(err.message);

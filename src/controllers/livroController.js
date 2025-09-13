@@ -17,7 +17,7 @@ const getLivros = async (req, res) => {
 const getLivroById = async (req, res) => {
     const filtros = req.params;
     try {
-        const result = await livroService.getLivroById(filtros)
+        const result = await livroService.getLivroById(filtros.id)
         if (result.success) {
             return res.status(200).json(result.data)
         }
@@ -46,7 +46,7 @@ const updateLivro = async (req, res) => {
     const id = req.params.id;
     const dados = req.body;
     try {
-        const result = await livroService.updateLivro({ id, ...dados })
+        const result = await livroService.updateLivro(dados, id)
         if (result.success) {
             return res.status(200).json(result.data)
         }

@@ -1,36 +1,131 @@
-const findAll = (filtros = {}) => {
-    // Aplicar filtros
-    const livros = [
-        { id: 1, title: 'Dom Casmurro', author: 'Machado de Assis', year: 1899 },
-        { id: 2, title: 'O Cortiço', author: 'Aluísio Azevedo', year: 1890 },
-        { id: 3, title: 'Iracema', author: 'José de Alencar', year: 1865 }
-    ];
+const db = require('../config/database');
 
+// Busca todos os livros do banco de dados
+// Pode receber filtros como parâmetro para pesquisa personalizada
+const findAll = async (filtros = {}) => {
+    let query = 'SELECT * FROM livros WHERE deleted_at IS NULL';
+    const params = [];
+
+    if (filtros.titulo) {
+        query += ' AND titulo LIKE ?';
+        params.push(`%${filtros.titulo}%`);
+    }
+
+    if (filtros.nome_autor) {
+        query += ' AND nome_autor LIKE ?';
+        params.push(`%${filtros.nome_autor}%`);
+    }
+
+    const [livros] = await db.execute(query, params);
     return livros;
 }
 
-const findById = (id) => {
-    const livro = {};
-
-    return livro;
+// Busca um livro específico pelo ID
+const findById = async (id) => {
+    const query = 'SELECT * FROM livros WHERE id = ? AND deleted_at IS NULL';
+    const [livros] = await db.execute(query, [id]);
+    return livros[0];
 }
 
-const create = (request) => {
-    const livro = {};
+// Cria um novo registro de livro no banco de dados
+const create = async (request) => {
+    const query = `
+        INSERT INTO livros 
+        (titulo, nome_autor, descricao, isbn, edicao, ano_publicacao, editor, arquivo_url, capa_url, usuario_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
-    return livro;
+    const params = [
+        request.titulo || null,
+        request.nome_autor || null,
+        request.descricao || null,
+        request.isbn || null,
+        request.edicao || null,
+        request.ano_publicacao || null,
+        request.editor || null,
+        request.arquivo_url || null,
+        request.capa_url || null,
+        request.usuario_id || null
+    ];
+
+    const [result] = await db.execute(query, params);
+    return findById(result.insertId);
 }
 
-const update = (request, id) => {
-    const livro = {};
+// Atualiza os dados de um livro existente
+const update = async (request, id) => {
+    let setClause = [];
+    let params = [];
 
-    return livro;
+    // Aqui faremos diversos testes para verificar se os parâmetros estão vazios ou não
+    // Por que faremos isso? Para não remover um campo preenchido com uma condição nula, exemplo:
+    // request.isbn é null, mas no banco de dados esta preenchido
+    // se jogarmos isso sem tratar, iremos remover a informação do banco
+    if (request.titulo != undefined || request.titulo) {
+        setClause.push('titulo = ?');
+        params.push(request.titulo);
+    }
+    if (request.nome_autor != undefined || request.nome_autor) {
+        setClause.push('nome_autor = ?');
+        params.push(request.nome_autor);
+    }
+    if (request.descricao != undefined || request.descricao) {
+        setClause.push('descricao = ?');
+        params.push(request.descricao);
+    }
+    if (request.isbn != undefined || request.isbn) {
+        setClause.push('isbn = ?');
+        params.push(request.isbn);
+    }
+    if (request.edicao != undefined || request.edicao) {
+        setClause.push('edicao = ?');
+        params.push(request.edicao);
+    }
+    if (request.ano_publicacao != undefined || request.ano_publicacao) {
+        setClause.push('ano_publicacao = ?');
+        params.push(request.ano_publicacao);
+    }
+    if (request.editor != undefined || request.editor) {
+        setClause.push('editor = ?');
+        params.push(request.editor);
+    }
+    if (request.arquivo_url != undefined || request.arquivo_url) {
+        setClause.push('arquivo_url = ?');
+        params.push(request.arquivo_url);
+    }
+    if (request.capa_url != undefined || request.capa_url) {
+        setClause.push('capa_url = ?');
+        params.push(request.capa_url);
+    }
+
+    // Caso não tenha nada para atualizar, iremos fazer um "early return"
+    // Um "retorno antecipado" é uma técnica de retornar antes de realizar uma ação que demande mais processamento
+    // Assim você evita de puxar mais processamento do que fato é necessário
+    // Também há a questão da legibilidade do código, para que não haja ninhos de if/else dentro do código
+    // Deixando o código mais fácil de ler
+    if (setClause.length === 0) {
+        return findById(id);
+    }
+    
+
+    params.push(id);
+
+    const query = `
+        UPDATE livros 
+        SET ${setClause.join(', ')}
+        WHERE id = ? AND deleted_at IS NULL
+    `;
+
+    await db.execute(query, params);
+    return findById(id);
 }
 
-const deleteRegister = (id) => {
-    const livro = {};
-
-    return livro;
+// Realiza uma exclusão lógica do livro (soft delete)
+// Podemos reativa-lo depois se necessário
+const deleteRegister = async (id) => {
+    const query = 'UPDATE livros SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL';
+    await db.execute(query, [id]);
+    return { id };
 }
 
 module.exports = {
