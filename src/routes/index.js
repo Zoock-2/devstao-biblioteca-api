@@ -4,7 +4,7 @@ const userRoutes = require('./userRoutes')
 
 const livroRotas = require('./livroRotas');
 
-router.use('/livros', livroRotas);
 router.use('/auth',userRoutes);
+router.use('/livros', livroRotas);
 
 module.exports = router;
