@@ -16,6 +16,10 @@ const findAll = async (filtros = {}) => {
         params.push(`%${filtros.nome_autor}%`);
     }
 
+    if (filtros.order_by_counts) {
+        query += ' ORDER BY visitas_count DESC';
+    }
+
     const [livros] = await db.execute(query, params);
     return livros;
 }
@@ -106,7 +110,7 @@ const update = async (request, id) => {
     if (setClause.length === 0) {
         return findById(id);
     }
-    
+
 
     params.push(id);
 
@@ -126,6 +130,12 @@ const deleteRegister = async (id) => {
     const query = 'UPDATE livros SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND deleted_at IS NULL';
     await db.execute(query, [id]);
     return { id };
+}
+
+const incrementViewCount = async (id) => {
+    const query = 'UPDATE livros SET visitas_count = visitas_count + 1 WHERE id = ? AND deleted_at IS NULL';
+    await db.execute(query, [id]);
+    return findById(id);
 }
 
 module.exports = {

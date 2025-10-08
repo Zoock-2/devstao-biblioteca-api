@@ -65,10 +65,28 @@ const deleteLivro = async (id) => {
     }
 }
 
+const countView = async (id) => {
+    try {
+        const livroExiste = await Livro.findById(id);
+
+        if (!livroExiste) {
+            return Response.error('Livro não encontrado', 404);
+        }
+
+        const livroAtualizado = await Livro.incrementViewCount(id);
+
+        return Response.success(livroAtualizado, 200)
+    }
+    catch (err) {
+        return Response.error(err.message);
+    }
+}
+
 module.exports = {
     getAllLivros,
     getLivroById,
     createLivro,
     updateLivro,
-    deleteLivro
+    deleteLivro,
+    countView
 }

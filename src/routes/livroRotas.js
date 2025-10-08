@@ -8,5 +8,6 @@ router.get('/:id', LivroController.getLivroById);
 router.post('/', LivroController.createLivro);
 router.put('/:id', LivroController.updateLivro);
 router.delete('/', LivroController.deleteLivro);
+router.patch('/:id/view', LivroController.countView);
 
 module.exports = router;

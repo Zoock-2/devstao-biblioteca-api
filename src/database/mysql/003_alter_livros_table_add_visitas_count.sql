@@ -1,0 +1,2 @@
+ALTER TABLE livros
+ADD COLUMN visitas_count INT DEFAULT 0 NOT NULL;
