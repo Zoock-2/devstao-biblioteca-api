@@ -1,6 +1,6 @@
 {
   "name": "devstao-biblioteca-api",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "Backend API para a biblioteca online do DevStão",
   "main": "index.js",
   "scripts": {
