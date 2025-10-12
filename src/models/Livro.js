@@ -1,3 +1,4 @@
+const { categoriasEnum } = require('../utils/enums/categoriasEnum');
 const db = require('../config/database');
 
 // Busca todos os livros do banco de dados
@@ -6,14 +7,36 @@ const findAll = async (filtros = {}) => {
     let query = 'SELECT * FROM livros WHERE deleted_at IS NULL';
     const params = [];
 
-    if (filtros.titulo) {
-        query += ' AND titulo LIKE ?';
-        params.push(`%${filtros.titulo}%`);
+    // Se titulo, nome_autor e descricao estiverem todos preenchidos, faz busca geral nos três campos
+    if (filtros.titulo && filtros.nome_autor && filtros.descricao) {
+        const termoGeral = `%${filtros.titulo}%`;
+        query += ' AND (titulo LIKE ? OR nome_autor LIKE ? OR descricao LIKE ?)';
+        params.push(termoGeral, termoGeral, termoGeral);
+    } else {
+        // Caso contrário, aplica filtros individuais normalmente
+        if (filtros.titulo) {
+            query += ' AND titulo LIKE ?';
+            params.push(`%${filtros.titulo}%`);
+        }
+
+        if (filtros.nome_autor) {
+            query += ' AND nome_autor LIKE ?';
+            params.push(`%${filtros.nome_autor}%`);
+        }
+
+        if (filtros.descricao) {
+            query += ' AND descricao LIKE ?';
+            params.push(`%${filtros.descricao}%`);
+        }
     }
 
-    if (filtros.nome_autor) {
-        query += ' AND nome_autor LIKE ?';
-        params.push(`%${filtros.nome_autor}%`);
+    if (filtros.order_by_counts) {
+        query += ' ORDER BY visitas_count DESC';
+    }
+
+    if (filtros.categoria) {
+        query += ' AND categoria = ?';
+        params.push(filtros.categoria);
     }
 
     const [livros] = await db.execute(query, params);
@@ -31,9 +54,14 @@ const findById = async (id) => {
 const create = async (request) => {
     const query = `
         INSERT INTO livros 
-        (titulo, nome_autor, descricao, isbn, edicao, ano_publicacao, editor, arquivo_url, capa_url, usuario_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        (titulo, nome_autor, descricao, isbn, edicao, ano_publicacao, editor, arquivo_url, capa_url, usuario_id, categoria) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
+
+    const categoriaTratada = request.categoria || 'outros';
+    if (!categoriasEnum.includes(categoriaTratada)) {
+        categoriaTratada = 'outros';
+    }
 
     const params = [
         request.titulo || null,
@@ -45,7 +73,8 @@ const create = async (request) => {
         request.editor || null,
         request.arquivo_url || null,
         request.capa_url || null,
-        request.usuario_id || null
+        request.usuario_id || null,
+        categoriaTratada,
     ];
 
     const [result] = await db.execute(query, params);
@@ -106,7 +135,7 @@ const update = async (request, id) => {
     if (setClause.length === 0) {
         return findById(id);
     }
-    
+
 
     params.push(id);
 
@@ -128,11 +157,18 @@ const deleteRegister = async (id) => {
     return { id };
 }
 
+const incrementViewCount = async (id) => {
+    const query = 'UPDATE livros SET visitas_count = visitas_count + 1 WHERE id = ? AND deleted_at IS NULL';
+    await db.execute(query, [id]);
+    return findById(id);
+}
+
 module.exports = {
     findAll,
     findById,
     create,
     update,
-    deleteRegister
+    deleteRegister,
+    incrementViewCount
 }
 

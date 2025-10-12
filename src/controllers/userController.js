@@ -14,12 +14,22 @@ const UserController = {
   async login(req, res) {
     try {
       const { email, senha } = req.body;
-      const { token } = await UserService.login({ email, senha });
-      return res.json({ token });
+      const { token, nome } = await UserService.login({ email, senha });
+      return res.json({ token, nome });
     } catch (err) {
       return res.status(401).json({ erro: err.message });
     }
-  }
+  },
+
+  // Busca todos os escritores
+  async getEscritores(req, res) {
+    try {
+      const escritores = await UserService.getEscritores();
+      return res.json(escritores);
+    } catch (err) {
+      return res.status(500).json({ erro: err.message });
+    }
+  },
 };
 
 module.exports = UserController;

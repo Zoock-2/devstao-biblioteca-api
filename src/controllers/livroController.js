@@ -1,7 +1,7 @@
 const livroService = require('../services/livroServices');
 
 const getLivros = async (req, res) => {
-    const filtros = req.params;
+    const filtros = req.query;
     try {
         const result = await livroService.getAllLivros(filtros)
         if (result.success) {
@@ -9,7 +9,7 @@ const getLivros = async (req, res) => {
         }
         return res.status(500).json({ error: result.error });
     }
-    catch(err) {
+    catch (err) {
         return res.status(500).json({ error: err });
     }
 }
@@ -23,7 +23,7 @@ const getLivroById = async (req, res) => {
         }
         return res.status(500).json({ error: result.error });
     }
-    catch(err) {
+    catch (err) {
         return res.status(500).json({ error: err });
     }
 }
@@ -37,7 +37,7 @@ const createLivro = async (req, res) => {
         }
         return res.status(500).json({ error: result.error });
     }
-    catch(err) {
+    catch (err) {
         return res.status(500).json({ error: err });
     }
 }
@@ -52,7 +52,7 @@ const updateLivro = async (req, res) => {
         }
         return res.status(500).json({ error: result.error });
     }
-    catch(err) {
+    catch (err) {
         return res.status(500).json({ error: err });
     }
 }
@@ -66,7 +66,26 @@ const deleteLivro = async (req, res) => {
         }
         return res.status(500).json({ error: result.error });
     }
-    catch(err) {
+    catch (err) {
+        return res.status(500).json({ error: err });
+    }
+}
+
+const countView = async (req, res) => {
+    const id = req.params.id;
+
+    if (!id) {
+        return res.status(400).json({ error: 'ID do livro é obrigatório' });
+    }
+
+    try {
+        const result = await livroService.countView(id);
+        if (result.success) {
+            return res.status(200).json(result.data);
+        }
+        return res.status(500).json({ error: result.error });
+    }
+    catch (err) {
         return res.status(500).json({ error: err });
     }
 }
@@ -76,5 +95,6 @@ module.exports = {
     getLivroById,
     createLivro,
     updateLivro,
-    deleteLivro
+    deleteLivro,
+    countView
 };

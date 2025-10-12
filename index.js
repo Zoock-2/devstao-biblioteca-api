@@ -14,6 +14,8 @@ if (process.env.APP_ENV === 'development') {
     origin: [
       "http://localhost:8080",
       "http://localhost:8000",
+      "http://localhost:80",
+      "http://localhost",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"]
   }));
