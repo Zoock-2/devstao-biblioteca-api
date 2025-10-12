@@ -1,7 +1,7 @@
 const livroService = require('../services/livroServices');
 
 const getLivros = async (req, res) => {
-    const filtros = req.params;
+    const filtros = req.query;
     try {
         const result = await livroService.getAllLivros(filtros)
         if (result.success) {
