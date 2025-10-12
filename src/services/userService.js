@@ -32,8 +32,13 @@ const UserService = {
       { expiresIn: '1h' }
     );
 
-    return { token };
-  }
+    return { token, nome: user.nome };
+  },
+
+  // Busca todos os escritores
+  async getEscritores() {
+    return await User.findEscritores();
+  },
 };
 
 module.exports = UserService;

@@ -13,7 +13,13 @@ const User = {
       [nome, email, senhaHash]
     );
     return { id: result.insertId, nome, email };
-  }
+  },
+
+  // Busca todos os escritores
+  async findEscritores() {
+    const [rows] = await db.execute('SELECT u.id, u.nome FROM devstao_biblioteca.users u JOIN livros l on l.usuario_id = u.id');
+    return rows;
+  },
 };
 
 module.exports = User;
