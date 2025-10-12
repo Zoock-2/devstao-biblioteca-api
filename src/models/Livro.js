@@ -73,7 +73,7 @@ const create = async (request) => {
         request.editor || null,
         request.arquivo_url || null,
         request.capa_url || null,
-        request.usuario_id || null,
+        request.user_id || null,
         categoriaTratada,
     ];
 

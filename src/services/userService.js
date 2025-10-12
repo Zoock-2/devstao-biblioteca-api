@@ -27,7 +27,7 @@ const UserService = {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email, nome: user.nome },
+      { id: user.id, email: user.email, nome: user.nome },
       JWT_SECRET,
       { expiresIn: '1h' }
     );

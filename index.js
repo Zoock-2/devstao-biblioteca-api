@@ -1,6 +1,7 @@
 const loadEnv = require('./src/config/env');
 loadEnv();
 const routes = require('./src/routes');
+const path = require('path');
 const cors = require('cors');
 const PORT = process.env.PORT || 3000;
 
@@ -21,6 +22,7 @@ if (process.env.APP_ENV === 'development') {
   }));
 }
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use('/api', routes);
 
