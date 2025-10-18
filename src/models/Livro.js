@@ -59,9 +59,11 @@ const findById = async (id, userId) => {
         SELECT l.*,
             COUNT(v.id) as total_votos,
             COALESCE(AVG(v.nota), 0) as media_votos,
-            COALESCE((SELECT v2.id FROM votacoes v2 WHERE v2.livro_id = l.id AND v2.usuario_id = ? LIMIT 1), 0) as votacao_id
+            COALESCE((SELECT v2.id FROM votacoes v2 WHERE v2.livro_id = l.id AND v2.usuario_id = ? LIMIT 1), 0) as votacao_id,
+            u.nome as usuario_nome
         FROM livros l
         LEFT JOIN votacoes v ON v.livro_id = l.id
+        LEFT JOIN users u ON u.id = l.usuario_id 
         WHERE l.id = ? AND l.deleted_at IS NULL
         GROUP BY l.id
     `;
