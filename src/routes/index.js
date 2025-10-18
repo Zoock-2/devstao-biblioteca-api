@@ -21,8 +21,8 @@ router.post(
 );
 
 router.use('/auth', authRoutes);
-router.use('/users', userRoutes);
-router.use('/livros', livroRotas);
-router.use('/votacoes', votacaoRoutes);
+router.use('/users', autenticarJWT, userRoutes);
+router.use('/livros', autenticarJWT, livroRotas);
+router.use('/votacoes', autenticarJWT, votacaoRoutes);
 
 module.exports = router;
