@@ -1,0 +1,11 @@
+CREATE TABLE votacoes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nota DECIMAL(3,1),
+    data_votacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    usuario_id INT,
+    livro_id INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES users(id),
+    FOREIGN KEY (livro_id) REFERENCES livros(id)
+);

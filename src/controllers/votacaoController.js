@@ -30,13 +30,15 @@ const getVotacaoById = async (req, res) => {
 
 const createVotacao = async (req, res) => {
     const dados = req.body;
+    const userId = req.user.id;
 
-    // Validação básica dos dados necessários
-    if (!dados.estrelas || !dados.usuario_id || !dados.livro_id) {
+    if (!dados.nota || !dados.livro_id) {
         return res.status(400).json({
-            error: 'Dados incompletos. Estrelas, ID do usuário e ID do livro são obrigatórios.'
+            error: 'Dados incompletos. Nota, ID do livro são obrigatórios.'
         });
     }
+
+    dados.usuario_id = userId;
 
     try {
         const result = await votacaoService.createVotacao(dados);
@@ -54,7 +56,7 @@ const updateVotacao = async (req, res) => {
     const { id } = req.params;
     const dados = req.body;
 
-    if (!dados.estrelas) {
+    if (!dados.nota) {
         return res.status(400).json({
             error: 'A quantidade de estrelas é obrigatória para atualização.'
         });

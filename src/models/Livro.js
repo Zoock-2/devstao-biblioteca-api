@@ -4,7 +4,15 @@ const db = require('../config/database');
 // Busca todos os livros do banco de dados
 // Pode receber filtros como parâmetro para pesquisa personalizada
 const findAll = async (filtros = {}) => {
-    let query = 'SELECT * FROM livros WHERE deleted_at IS NULL';
+    let query = `
+        SELECT l.*,
+            COUNT(v.id) as total_votos,
+            COALESCE(AVG(v.nota), 0) as media_votos
+        FROM livros l
+        LEFT JOIN votacoes v ON v.livro_id = l.id
+        WHERE l.deleted_at IS NULL
+        `;
+
     const params = [];
 
     // Se titulo, nome_autor e descricao estiverem todos preenchidos, faz busca geral nos três campos
@@ -39,14 +47,28 @@ const findAll = async (filtros = {}) => {
         params.push(filtros.categoria);
     }
 
+    query += ' GROUP BY l.id';
+
     const [livros] = await db.execute(query, params);
     return livros;
 }
 
 // Busca um livro específico pelo ID
-const findById = async (id) => {
-    const query = 'SELECT * FROM livros WHERE id = ? AND deleted_at IS NULL';
-    const [livros] = await db.execute(query, [id]);
+const findById = async (id, userId) => {
+    const query = `
+        SELECT l.*,
+            COUNT(v.id) as total_votos,
+            COALESCE(AVG(v.nota), 0) as media_votos,
+            COALESCE((SELECT v2.id FROM votacoes v2 WHERE v2.livro_id = l.id AND v2.usuario_id = ? LIMIT 1), 0) as votacao_id,
+            u.nome as usuario_nome
+        FROM livros l
+        LEFT JOIN votacoes v ON v.livro_id = l.id
+        LEFT JOIN users u ON u.id = l.usuario_id 
+        WHERE l.id = ? AND l.deleted_at IS NULL
+        GROUP BY l.id
+    `;
+    const params = [userId || null, id];
+    const [livros] = await db.execute(query, params);
     return livros[0];
 }
 

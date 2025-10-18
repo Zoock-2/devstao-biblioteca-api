@@ -11,9 +11,9 @@ const getAllLivros = async (filtros = {}) => {
     }
 }
 
-const getLivroById = async (id) => {
+const getLivroById = async (id, userId) => {
     try {
-        const livro = await Livro.findById(id);
+        const livro = await Livro.findById(id, userId);
         if (!livro) {
             return Response.error('Livro não encontrado', 404);
         }
