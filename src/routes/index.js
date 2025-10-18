@@ -6,6 +6,7 @@ const livroRotas = require('./livroRotas');
 const votacaoRoutes = require('./votacaoRoutes');
 const { upload } = require('../config/upload');
 const LivroController = require('../controllers/livroController');
+const UserController = require('../controllers/userController');
 const autenticarJWT = require('../middlewares/authMiddleware');
 
 
@@ -18,6 +19,13 @@ router.post(
   ]),
   autenticarJWT,
   LivroController.createLivro
+);
+
+router.post(
+  '/users/:id/avatar',
+  upload.single('avatar'),
+  autenticarJWT,
+  UserController.uploadAvatar
 );
 
 router.use('/auth', authRoutes);
