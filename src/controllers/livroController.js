@@ -16,8 +16,9 @@ const getLivros = async (req, res) => {
 
 const getLivroById = async (req, res) => {
     const filtros = req.params;
+    const userId = req.user.id;
     try {
-        const result = await livroService.getLivroById(filtros.id)
+        const result = await livroService.getLivroById(filtros.id, userId)
         if (result.success) {
             return res.status(200).json(result.data)
         }
