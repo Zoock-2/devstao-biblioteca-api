@@ -32,7 +32,7 @@ const UserService = {
       { expiresIn: '1h' }
     );
 
-    return { token, nome: user.nome };
+    return { token, nome: user.nome, avatar_url: user.avatar_url };
   },
 
   // Busca todos os escritores

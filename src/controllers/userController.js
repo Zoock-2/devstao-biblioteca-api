@@ -15,7 +15,7 @@ const UserController = {
     try {
       const { email, senha } = req.body;
       const { token, nome, avatar_url } = await UserService.login({ email, senha });
-      return res.json({ token, nome });
+      return res.json({ token, nome, avatar_url });
     } catch (err) {
       return res.status(401).json({ erro: err.message });
     }
