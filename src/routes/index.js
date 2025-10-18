@@ -6,6 +6,7 @@ const livroRotas = require('./livroRotas');
 const votacaoRoutes = require('./votacaoRoutes');
 const { upload } = require('../config/upload');
 const LivroController = require('../controllers/livroController');
+const UserController = require('../controllers/userController');
 const autenticarJWT = require('../middlewares/authMiddleware');
 
 
@@ -20,9 +21,16 @@ router.post(
   LivroController.createLivro
 );
 
+router.post(
+  '/users/:id/avatar',
+  upload.single('avatar'),
+  autenticarJWT,
+  UserController.uploadAvatar
+);
+
 router.use('/auth', authRoutes);
-router.use('/users', userRoutes);
-router.use('/livros', livroRotas);
-router.use('/votacoes', votacaoRoutes);
+router.use('/users', autenticarJWT, userRoutes);
+router.use('/livros', autenticarJWT, livroRotas);
+router.use('/votacoes', autenticarJWT, votacaoRoutes);
 
 module.exports = router;

@@ -32,12 +32,48 @@ const UserService = {
       { expiresIn: '1h' }
     );
 
-    return { token, nome: user.nome };
+    return { token, nome: user.nome, avatar_url: user.avatar_url };
   },
 
   // Busca todos os escritores
   async getEscritores() {
     return await User.findEscritores();
+  },
+
+  // Busca usuário por ID
+  async getUserById(id) {
+    const user = await User.findById(id);
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+    return user;
+  },
+
+  // Atualiza informações do usuário
+  async updateUser(id, { nome, email }) {
+    const user = await User.findById(id);
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+
+    if (email && email !== user.email) {
+      const existingUser = await User.findByEmail(email);
+      if (existingUser && existingUser.id !== parseInt(id)) {
+        throw new Error('Email já está em uso');
+      }
+    }
+
+    return await User.update(id, { nome, email });
+  },
+
+  // Atualiza avatar do usuário
+  async updateAvatar(id, avatar_url) {
+    const user = await User.findById(id);
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+
+    return await User.update(id, { avatar_url });
   },
 };
 
