@@ -17,7 +17,7 @@ const User = {
 
   // Busca todos os escritores
   async findEscritores() {
-    const [rows] = await db.execute('SELECT DISTINCT u.id, u.nome FROM users u JOIN livros l on l.usuario_id = u.id');
+    const [rows] = await db.execute('SELECT DISTINCT u.id, u.nome, u.avatar_url FROM users u JOIN livros l on l.usuario_id = u.id');
     return rows;
   },
 
