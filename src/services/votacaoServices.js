@@ -58,8 +58,8 @@ const updateVotacao = async (dadosVotacao, id) => {
         }
 
         // Valida a quantidade de estrelas (entre 1 e 5)
-        if (dadosVotacao.estrelas < 1 || dadosVotacao.estrelas > 5) {
-            return Response.error('A quantidade de estrelas deve ser entre 1 e 5', 400);
+        if (dadosVotacao.nota < 0 || dadosVotacao.estrelas > 5) {
+            return Response.error('A quantidade de estrelas deve ser entre 0 e 5', 400);
         }
 
         const votacaoAtualizada = await Votacao.update(dadosVotacao, id);

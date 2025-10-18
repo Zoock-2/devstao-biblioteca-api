@@ -54,11 +54,11 @@ const create = async (request) => {
 const update = async (request, id) => {
     const query = `
         UPDATE votacoes
-        SET estrelas = ?
+        SET nota = ?
         WHERE id = ?
     `;
 
-    await db.execute(query, [request.estrelas, id]);
+    await db.execute(query, [request.nota, id]);
     return findById(id);
 }
 
