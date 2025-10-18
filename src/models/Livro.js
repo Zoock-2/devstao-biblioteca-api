@@ -4,7 +4,15 @@ const db = require('../config/database');
 // Busca todos os livros do banco de dados
 // Pode receber filtros como parâmetro para pesquisa personalizada
 const findAll = async (filtros = {}) => {
-    let query = 'SELECT * FROM livros WHERE deleted_at IS NULL';
+    let query = `
+        SELECT l.*,
+            COUNT(v.id) as total_votos,
+            COALESCE(AVG(v.nota), 0) as media_votos
+        FROM livros l
+        LEFT JOIN votacoes v ON v.livro_id = l.id
+        WHERE l.deleted_at IS NULL
+        `;
+
     const params = [];
 
     // Se titulo, nome_autor e descricao estiverem todos preenchidos, faz busca geral nos três campos
@@ -38,6 +46,8 @@ const findAll = async (filtros = {}) => {
         query += ' AND categoria = ?';
         params.push(filtros.categoria);
     }
+
+    query += ' GROUP BY l.id';
 
     const [livros] = await db.execute(query, params);
     return livros;
