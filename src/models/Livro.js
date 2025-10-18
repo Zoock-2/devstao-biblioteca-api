@@ -45,7 +45,14 @@ const findAll = async (filtros = {}) => {
 
 // Busca um livro específico pelo ID
 const findById = async (id) => {
-    const query = 'SELECT * FROM livros WHERE id = ? AND deleted_at IS NULL';
+    const query = `
+        SELECT l.*,
+            COUNT(v.id) as total_votos,
+            COALESCE(AVG(v.nota), 0) as media_votos
+        FROM livros l
+        LEFT JOIN votacoes v ON v.livro_id = l.id
+        WHERE l.id = ? AND l.deleted_at IS NULL
+        GROUP BY l.id`;
     const [livros] = await db.execute(query, [id]);
     return livros[0];
 }
