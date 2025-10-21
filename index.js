@@ -17,6 +17,7 @@ if (process.env.APP_ENV === 'development') {
       "http://localhost:8000",
       "http://localhost:80",
       "http://localhost",
+      'https://pardoxandria-api.devstao.dev',
     ],
     methods: ["GET", "POST", "PUT", "DELETE"]
   }));
