@@ -43,3 +43,5 @@ temp/
 
 # Optional: database files
 *.sqlite
+
+uploads/*
